@@ -4,6 +4,10 @@ from sqlmodel import SQLModel, Field, create_engine, Session, select, delete
 import json
 import os
 from contextlib import asynccontextmanager
+from fastapi.middleware.cors import CORSMiddleware
+
+
+
 
 url = "https://valorant-api.com/v1/agents"
 response = requests.get(url)
@@ -18,7 +22,7 @@ print(response.status_code)
 # print(data['data'][0]['displayName']) prints out Gekko
 
 # 1. create database
-app = FastAPI()
+
 
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 database_connection_string = f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/valorant_db"
@@ -41,6 +45,17 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+origins = [
+    "http://localhost:3000",  # This is your React app's address
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Which "origins" (websites) are allowed
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
 
 #2. we do the updating part
 
