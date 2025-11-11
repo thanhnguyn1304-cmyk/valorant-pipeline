@@ -2,7 +2,11 @@ import requests, uvicorn
 from fastapi import FastAPI
 from sqlmodel import SQLModel, Field, create_engine, Session, select, delete 
 import json
+
 import os
+from dotenv import load_dotenv 
+load_dotenv()
+
 from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -24,8 +28,17 @@ print(response.status_code)
 # 1. create database
 
 
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-database_connection_string = f"postgresql://postgres:{DB_PASSWORD}@localhost:5432/valorant_db"
+# OLD, BAD CODE:
+# database_connection_string = 'postgresql://postgres:thanh1304@localhost:5432/valorant_db'
+
+# NEW, SECURE CODE:
+DB_USER = "postgres"
+DB_PASSWORD = os.getenv("DB_PASSWORD") # Gets the password from the .env file
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "valorant_db"
+
+database_connection_string = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
 engine = create_engine(database_connection_string, echo = True) 
