@@ -32,12 +32,18 @@ print(response.status_code)
 # database_connection_string = 'postgresql://postgres:thanh1304@localhost:5432/valorant_db'
 
 # NEW, SECURE CODE:
-DB_USER = "postgres"
-DB_PASSWORD = os.getenv("DB_PASSWORD") # Gets the password from the .env file
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "valorant_db"
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = os.getenv("DB_NAME")
 
+if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]):
+    # This is better than a confusing "password failed" error later.
+    raise ValueError("One or more database environment variables are missing from .env")
+
+# Build the string from the variables
+# This code is now 100% flexible and has NO secrets.
 database_connection_string = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
