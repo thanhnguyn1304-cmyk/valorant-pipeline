@@ -68,7 +68,7 @@ origins = [
     "http://localhost:3000",  # This is your React app's address
 ]
 
-app.add_middleware(
+app.add_middleware( 
     CORSMiddleware,
     allow_origins=origins,  # Which "origins" (websites) are allowed
     allow_credentials=True,
