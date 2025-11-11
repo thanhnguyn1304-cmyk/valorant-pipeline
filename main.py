@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from sqlmodel import SQLModel, Field, create_engine, Session, select, delete 
 import json
 import os
+from contextlib import asynccontextmanager
 
 url = "https://valorant-api.com/v1/agents"
 response = requests.get(url)
@@ -31,9 +32,14 @@ class Agent(SQLModel, table = True):
     role : str
     description : str
 
-@app.on_event("startup")
-def create_db_and_tables():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # create db
     SQLModel.metadata.create_all(engine)
+
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 
 #2. we do the updating part
