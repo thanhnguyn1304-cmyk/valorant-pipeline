@@ -47,6 +47,10 @@ if not all([DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME]):
 database_connection_string = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 
+
+
+
+
 engine = create_engine(database_connection_string, echo = True) 
 
 class Agent(SQLModel, table = True):
@@ -54,6 +58,7 @@ class Agent(SQLModel, table = True):
     displayName : str
     role : str
     description : str
+    displayIcon: str
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -119,6 +124,7 @@ def get_all_agents():
 
             for agent_json in data['data']:
                 new_agent = Agent(
+                displayIcon=agent_json['displayIcon'],
                 displayName=agent_json['displayName'],
                 role=agent_json['role']['displayName'],
                 description=agent_json['description'],
