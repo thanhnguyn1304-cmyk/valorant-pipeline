@@ -21,14 +21,12 @@ region = "ap"
 player_name = "blazinho"
 player_tag = "suy"
 
-url1 = (
-    "https://api.henrikdev.xyz/valorant/v3/matches/{region}/{player_name}/{player_tag}"
-)
+url1 = "https://api.henrikdev.xyz/valorant/v3/matches/ap/blazinho/suy"
 access_token = os.getenv("ACCESS_TOKEN")
 
-headers = {"Authorization": "access_token", "Accept": "*/*"}
+headers = {"Authorization": access_token, "Accept": "*/*"}
 
-responseOfBlazinho = requests.get(url, headers=headers)
+responseOfBlazinho = requests.get(url1, headers=headers)
 dataOfBlazinho = responseOfBlazinho.json()
 
 if responseOfBlazinho.status_code == 200:
