@@ -16,6 +16,8 @@ class MatchBase(SQLModel):
 
 class ParticipationBase(SQLModel):
     id : int
+    user_id : str
+    user_tag : str
     agent_name: str
     map: str
     roundsWon : int
