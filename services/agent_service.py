@@ -29,7 +29,7 @@ class AgentService:
                         db.add(new_agent)
                         agents_to_add.append(new_agent)
 
-                    
+                    # added
             db.commit()
 
             for agent in agents_to_add:
