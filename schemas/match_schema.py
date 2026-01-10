@@ -46,8 +46,6 @@ class ParticipationBase(SQLModel):
             fmt_pos = f'{self.position}th'
         
         return fmt_pos
-    
-
     @computed_field
     def adr(self) -> int:
         adr = round(self.damage_dealt / self.rounds_played)

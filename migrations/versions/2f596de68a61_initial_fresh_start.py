@@ -1,18 +1,20 @@
-"""fresh_start
+"""initial_fresh_start
 
-Revision ID: 4d40463c7dc5
+Revision ID: 2f596de68a61
 Revises: 
-Create Date: 2026-01-03 00:21:09.970108
+Create Date: 2026-01-11 02:01:44.706523
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
+
 import sqlmodel
 
+
 # revision identifiers, used by Alembic.
-revision: str = '4d40463c7dc5'
+revision: str = '2f596de68a61'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -37,9 +39,19 @@ def upgrade() -> None:
     sa.Column('duration_ms', sa.Integer(), nullable=False),
     sa.Column('winning_team', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('rounds_play', sa.Integer(), nullable=False),
+    sa.Column('blue_team_score', sa.Integer(), nullable=False),
+    sa.Column('red_team_score', sa.Integer(), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_match_id'), 'match', ['id'], unique=True)
+    op.create_table('user',
+    sa.Column('puuid', sa.Integer(), nullable=False),
+    sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('user_tag', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('region', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.PrimaryKeyConstraint('puuid')
+    )
+    op.create_index(op.f('ix_user_puuid'), 'user', ['puuid'], unique=True)
     op.create_table('matchparticipation',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('match_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -61,6 +73,11 @@ def upgrade() -> None:
     sa.Column('othershots', sa.Integer(), nullable=False),
     sa.Column('damage_dealt', sa.Integer(), nullable=False),
     sa.Column('damage_taken', sa.Integer(), nullable=False),
+    sa.Column('roundsWon', sa.Integer(), nullable=False),
+    sa.Column('roundsLost', sa.Integer(), nullable=False),
+    sa.Column('result', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
+    sa.Column('position', sa.Integer(), nullable=False),
+    sa.Column('linked_to_match', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['match_id'], ['match.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -75,6 +92,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_matchparticipation_puuid'), table_name='matchparticipation')
     op.drop_index(op.f('ix_matchparticipation_match_id'), table_name='matchparticipation')
     op.drop_table('matchparticipation')
+    op.drop_index(op.f('ix_user_puuid'), table_name='user')
+    op.drop_table('user')
     op.drop_index(op.f('ix_match_id'), table_name='match')
     op.drop_table('match')
     op.drop_table('agent')

@@ -52,4 +52,6 @@ class MatchParticipation(SQLModel, table=True):
     roundsLost : int
     result : str
     position : int
+    linked_to_match : bool = Field(default = False)
+
     match: Optional[Match] = Relationship(back_populates="participations")

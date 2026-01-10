@@ -4,14 +4,28 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+current_file_path = os.path.abspath(__file__)
+
+# 2. Go up TWO levels to find the 'backend' folder -> .../ValorTracker/backend
+backend_root = os.path.dirname(os.path.dirname(current_file_path))
+
+# 3. Go up ONE MORE level to find the project root -> .../ValorTracker
+project_root = os.path.dirname(backend_root)
+
+# 4. Add the PROJECT ROOT to Python's path
+# This allows "from backend.core..." to work because it finds "backend" inside "ValorTracker"
+sys.path.append(project_root)
 
 from backend.core.config import settings
 from backend.models import match, agent
 from backend.models.match import Match, MatchParticipation
+from backend.models.agent import Agent
+from backend.models.user import User
 from sqlmodel import SQLModel
 from alembic import context
 
-sys.path.append(os.getcwd())
+
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
