@@ -11,6 +11,14 @@ from backend.schemas.match_schema import ParticipationBase
 router = APIRouter()
 
 
+@router.get("/demo/{region}/{puuid}")
+async def demo(region: str, puuid: str):
+    match_service = MatchService()
+
+    match_data = await match_service.get_matches_by_region_and_puuid(region, puuid, 0)
+    return match_data
+
+
 @router.get("/{region}/{puuid}", response_model=List[ParticipationBase])
 async def get_matches(region: str, puuid: str, db: Session = Depends(get_session)):
 
@@ -22,7 +30,7 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
     if user_in_db:
         statement = select(MatchParticipation).where(
             MatchParticipation.puuid == puuid,
-            MatchParticipation.linked_to_player == True,
+            MatchParticipation.linked_to_match == True,
         )
         matches_in_db = db.exec(statement).all()
         flag = True
@@ -56,11 +64,12 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
 
     return matches
 
+
 @router.get("/{match_id}")
-def get_match_by_id(match_id : str, db : Session = Depends(get_session)):
+def get_match_by_id(match_id: str, db: Session = Depends(get_session)):
 
     match_service = MatchService()
-    
+
     match_detail = match_service.get_match_detail(match_id, db)
 
     return match_detail

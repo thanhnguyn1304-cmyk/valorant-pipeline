@@ -3,7 +3,7 @@ from backend.core.config import settings
 from fastapi import HTTPException
 from backend.models.match import Match, MatchParticipation
 from sqlmodel import Session, select
-
+from datetime import datetime
 
 class MatchService:
     def __init__(self):
@@ -42,7 +42,7 @@ class MatchService:
     def fetch_and_update_matches(self, match_data, puuid: str, db: Session):
         k = 3
         for match_json in match_data:
-            match_id = match_json["metadata"]["matchid"]
+            match_id = match_json["metadata"]["match_id"]
             statement = select(Match).where(Match.id == match_id)
             match_in_db = db.exec(statement).first()
             if match_in_db:
@@ -64,22 +64,22 @@ class MatchService:
             else:
                 new_match = Match(
                     id=match_id,
-                    map_name=match_json["metadata"]["map"],
-                    start_time=match_json["metadata"]["game_start"],
-                    start_time_patched=match_json["metadata"]["game_start_patched"],
-                    duration_ms=match_json["metadata"]["game_length"],
+                    map_name=match_json["metadata"]["map"]["name"],
+                    start_time=match_json["metadata"]["started_at"],
+                    start_time_patched=datetime.fromisoformat(match_json["metadata"]["started_at"]),
+                    duration_ms=match_json["metadata"]["game_length_in_ms"],
                     winning_team=(
-                        "red" if match_json["teams"]["red"]["has_won"] else "blue"
+                        "red" if match_json["teams"][0]["won"] else "blue"
                     ),  # "Blue" or "Red"
-                    rounds_play=match_json["metadata"]["rounds_played"],
-                    blue_team_score=match_json["teams"]["blue"]["rounds_won"],
-                    red_team_score=match_json["teams"]["red"]["rounds_won"],
+                    rounds_play=match_json["teams"][0]["rounds"]["won"]+match_json["teams"][0]["rounds"]["lost"],
+                    blue_team_score=match_json["teams"][1]["rounds"]["won"],
+                    red_team_score=match_json["teams"][0]["rounds"]["won"],
                 )
                 db.add(new_match)
                 db.commit()
                 db.refresh(new_match)
 
-                all_players_raw = match_json["players"]["all_players"]
+                all_players_raw = match_json["players"]
 
                 all_players_sorted = sorted(
                     all_players_raw, key=lambda x: x["stats"]["score"], reverse=True
@@ -110,7 +110,7 @@ class MatchService:
                         user_id=players["name"],
                         user_tag=players["tag"],
                         puuid=players["puuid"],
-                        agent_name=players["character"],
+                        agent_name=players["agent"]["name"],
                         agent_image=players["assets"]["agent"]["small"],
                         team_id=players["team"],
                         current_rank=players["currenttier_patched"],
@@ -135,7 +135,7 @@ class MatchService:
                         ),
                         result=tmpres,
                         position=rank,
-                        linked_to_player=True if players["puuid"] == puuid else False,
+                        linked_to_match=True if players["puuid"] == puuid else False,
                     )
 
                     db.add(new_participation)

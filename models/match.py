@@ -1,13 +1,13 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import List, Optional
-
+from datetime import datetime
 
 class Match(SQLModel, table=True):
     id: str = Field(
         primary_key=True, index=True, unique=True
     )  # The Riot Match ID (e.g., "a7f3...")
     map_name: str
-    start_time: int
+    start_time: datetime
     start_time_patched: str  # Unix timestamp (e.g., 1703650000)
     duration_ms: int  # Duration in milliseconds
     winning_team: str  # "Blue" or "Red"
@@ -25,7 +25,7 @@ class MatchParticipation(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     match_id: str = Field(foreign_key="match.id", index=True)
     rounds_played: int
-    start_time: int
+    start_time: datetime
     map : str
     user_id: str
     user_tag: str

@@ -1,15 +1,21 @@
 from backend.services.riot_client import RiotClient
-from backend.models import User
-from sqlmodel import Select, Session, select
+from backend.models.user import User
+from sqlmodel import select, Session
 
 class PlayerService:
     def __init__(self):
         self.riot_client = RiotClient()
-    def get_player_info(self, player_name: str, player_tag: str, db : Session):
-        puuid, region = self.riot_client.get_puuid_and_region(player_name, player_tag)
+    async def get_player_info(self, player_name: str, player_tag: str, db : Session):
+        puuid, region = await self.riot_client.get_puuid_and_region(player_name, player_tag)
         existing = select(User).where(User.puuid == puuid)
+        existing = db.exec(existing).first()
         if existing:
-            return puuid, region
+            if existing.player_name == player_name and existing.player_tag == player_tag :
+                return puuid, region
+            else:
+                existing.player_name = player_name
+                existing.player_tag = player_tag
+                return puuid, region
         else:
             new_user = User(puuid = puuid, user_id = player_name, user_tag = player_tag, region = region)
             db.add(new_user)
