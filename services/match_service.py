@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from backend.models.match import Match, MatchParticipation
 from sqlmodel import Session, select
 from datetime import datetime
+from backend.assets.agent_icon import small_display_icon
+
 
 class MatchService:
     def __init__(self):
@@ -111,7 +113,8 @@ class MatchService:
                         user_tag=players["tag"],
                         puuid=players["puuid"],
                         agent_name=players["agent"]["name"],
-                        agent_image=players["assets"]["agent"]["small"],
+                        agent_image=small_display_icon[players["agent"]["name"]],
+                        
                         team_id=players["team"],
                         current_rank=players["currenttier_patched"],
                         kills=players["stats"]["kills"],
