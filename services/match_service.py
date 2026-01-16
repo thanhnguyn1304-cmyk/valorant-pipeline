@@ -115,7 +115,7 @@ class MatchService:
                         agent_name=players["agent"]["name"],
                         agent_image=small_display_icon[players["agent"]["name"]],
                         
-                        team_id=players["team"],
+                        team_id=players["team"], # stopped here
                         current_rank=players["currenttier_patched"],
                         kills=players["stats"]["kills"],
                         deaths=players["stats"]["deaths"],
