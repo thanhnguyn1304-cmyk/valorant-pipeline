@@ -18,6 +18,11 @@ async def demo(region: str, puuid: str):
     match_data = await match_service.get_matches_by_region_and_puuid(region, puuid, 0)
     return match_data
 
+@router.get("/demo2/{match_id}")
+async def demo2(match_id: str):
+    match_service = MatchService()
+
+
 
 @router.get("/{region}/{puuid}", response_model=List[ParticipationBase])
 async def get_matches(region: str, puuid: str, db: Session = Depends(get_session)):
