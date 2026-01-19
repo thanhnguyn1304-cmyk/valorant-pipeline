@@ -115,8 +115,8 @@ class MatchService:
                         agent_name=players["agent"]["name"],
                         agent_image=small_display_icon[players["agent"]["name"]],
                         
-                        team_id=players["team"], # stopped here
-                        current_rank=players["currenttier_patched"],
+                        team_id=players["team_id"], # stopped here
+                        current_rank=players["tier"]["name"],
                         kills=players["stats"]["kills"],
                         deaths=players["stats"]["deaths"],
                         assists=players["stats"]["assists"],
@@ -124,16 +124,16 @@ class MatchService:
                         headshots=players["stats"]["headshots"],
                         othershots=players["stats"]["bodyshots"]
                         + players["stats"]["legshots"],
-                        damage_dealt=players["damage_made"],
-                        damage_taken=players["damage_received"],
+                        damage_dealt=players["damage"]["dealt"],
+                        damage_taken=players["damage"]["received"],
                         roundsWon=(
                             new_match.blue_team_score
-                            if players["team"] == "Blue"
+                            if players["team_id"] == "Blue"
                             else new_match.red_team_score
                         ),
                         roundsLost=(
                             new_match.red_team_score
-                            if players["team"] == "Blue"
+                            if players["team_id"] == "Blue"
                             else new_match.blue_team_score
                         ),
                         result=tmpres,
