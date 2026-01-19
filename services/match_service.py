@@ -11,7 +11,6 @@ class MatchService:
     def __init__(self):
         self.base_url = "https://api.henrikdev.xyz/valorant"
         self.headers = {"Authorization": settings.ACCESS_TOKEN, "Accept": "*/*"}
-        self.client = httpx.AsyncClient(timeout=httpx.Timeout(10.0))
 
     async def get_matches_by_region_and_puuid(
         self, region: str, puuid: str, start: int
@@ -20,7 +19,7 @@ class MatchService:
             self.base_url
             + f"/v4/by-puuid/matches/{region}/pc/{puuid}?mode=competitive&size=10&start={start}"
         )
-        async with self.client as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             response = await client.get(url, headers=self.headers)
             if response.status_code == 200:
                 data = response.json()
@@ -31,7 +30,7 @@ class MatchService:
             print(error_msg)  # In ra terminal (phòng hờ)
             raise HTTPException(status_code=response.status_code, detail=error_msg)
 
-    def update_player_link(match_id: str, puuid: str, db: Session):
+    def update_player_link(self, match_id: str, puuid: str, db: Session):
         statement = select(MatchParticipation).where(
             MatchParticipation.match_id == match_id, puuid == puuid
         )
@@ -53,7 +52,7 @@ class MatchService:
                     MatchParticipation.puuid == puuid,
                 )
 
-                participation = db.exec(stmt).first()
+                participation = db.exec(stmt).all()
 
                 if participation and participation.linked_to_match:
                     k -= 1
@@ -94,12 +93,12 @@ class MatchService:
                         tmpres = "draw"
                     elif (
                         new_match.blue_team_score > new_match.red_team_score
-                        and players["team"] == "Blue"
+                        and players["team_id"] == "Blue"
                     ):
                         tmpres = "win"
                     elif (
                         new_match.blue_team_score < new_match.red_team_score
-                        and players["team"] == "Red"
+                        and players["team_id"] == "Red"
                     ):
                         tmpres = "win"
                     else:
@@ -124,8 +123,8 @@ class MatchService:
                         headshots=players["stats"]["headshots"],
                         othershots=players["stats"]["bodyshots"]
                         + players["stats"]["legshots"],
-                        damage_dealt=players["damage"]["dealt"],
-                        damage_taken=players["damage"]["received"],
+                        damage_dealt=players["stats"]["damage"]["dealt"],
+                        damage_taken=players["stats"]["damage"]["received"],
                         roundsWon=(
                             new_match.blue_team_score
                             if players["team_id"] == "Blue"

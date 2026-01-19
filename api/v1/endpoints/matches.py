@@ -54,7 +54,7 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
         for i in range(5):
             current_start = i * 10
             match_data = await match_service.get_matches_by_region_and_puuid(
-                region, puuid, start=current_start
+                region, puuid, current_start
             )
             match_service.fetch_and_update_matches(match_data, puuid, db)
     statement = (

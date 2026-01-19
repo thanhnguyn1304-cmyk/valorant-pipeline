@@ -7,7 +7,6 @@ class RiotClient:
     def __init__(self):
         self.base_url = "https://api.henrikdev.xyz/valorant"
         self.headers = {"Authorization": settings.ACCESS_TOKEN, "Accept": "*/*"}
-        self.client = httpx.AsyncClient(timeout=httpx.Timeout(10.0))
 
     async def get_puuid_and_region(
         self, player_name: str, player_tag: str
@@ -15,7 +14,7 @@ class RiotClient:
         # URL cua Henrikdev
         url = self.base_url + f"/v1/account/{player_name}/{player_tag}?force=true"
 
-        async with self.client as client:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             response = await client.get(url, headers=self.headers)
             if response.status_code == 200:
                 data = response.json()

@@ -10,11 +10,11 @@ class PlayerService:
         existing = select(User).where(User.puuid == puuid)
         existing = db.exec(existing).first()
         if existing:
-            if existing.player_name == player_name and existing.player_tag == player_tag :
+            if existing.user_id == player_name and existing.user_tag == player_tag :
                 return puuid, region
             else:
-                existing.player_name = player_name
-                existing.player_tag = player_tag
+                existing.user_id = player_name
+                existing.user_tag = player_tag
                 return puuid, region
         else:
             new_user = User(puuid = puuid, user_id = player_name, user_tag = player_tag, region = region)

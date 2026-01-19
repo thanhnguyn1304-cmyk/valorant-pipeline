@@ -1,20 +1,18 @@
-"""initial_fresh_start
+"""fresh_start
 
-Revision ID: 2f596de68a61
+Revision ID: e1dd0579c919
 Revises: 
-Create Date: 2026-01-11 02:01:44.706523
+Create Date: 2026-01-20 03:00:01.905868
 
 """
 from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-
 import sqlmodel
 
-
 # revision identifiers, used by Alembic.
-revision: str = '2f596de68a61'
+revision: str = 'e1dd0579c919'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -34,7 +32,7 @@ def upgrade() -> None:
     op.create_table('match',
     sa.Column('id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('map_name', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
-    sa.Column('start_time', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=False),
     sa.Column('start_time_patched', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('duration_ms', sa.Integer(), nullable=False),
     sa.Column('winning_team', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -44,19 +42,19 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_match_id'), 'match', ['id'], unique=True)
-    op.create_table('user',
-    sa.Column('puuid', sa.Integer(), nullable=False),
+    op.create_table('users',
+    sa.Column('puuid', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('user_tag', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('region', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.PrimaryKeyConstraint('puuid')
     )
-    op.create_index(op.f('ix_user_puuid'), 'user', ['puuid'], unique=True)
+    op.create_index(op.f('ix_users_puuid'), 'users', ['puuid'], unique=True)
     op.create_table('matchparticipation',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('match_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('rounds_played', sa.Integer(), nullable=False),
-    sa.Column('start_time', sa.Integer(), nullable=False),
+    sa.Column('start_time', sa.DateTime(), nullable=False),
     sa.Column('map', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('user_id', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
     sa.Column('user_tag', sqlmodel.sql.sqltypes.AutoString(), nullable=False),
@@ -92,8 +90,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_matchparticipation_puuid'), table_name='matchparticipation')
     op.drop_index(op.f('ix_matchparticipation_match_id'), table_name='matchparticipation')
     op.drop_table('matchparticipation')
-    op.drop_index(op.f('ix_user_puuid'), table_name='user')
-    op.drop_table('user')
+    op.drop_index(op.f('ix_users_puuid'), table_name='users')
+    op.drop_table('users')
     op.drop_index(op.f('ix_match_id'), table_name='match')
     op.drop_table('match')
     op.drop_table('agent')
