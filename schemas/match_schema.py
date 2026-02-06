@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Any
 from sqlmodel import SQLModel
 from backend.models.match import Match, MatchParticipation # Import your actual DB models
 from pydantic import computed_field
@@ -9,13 +9,14 @@ from pydantic import computed_field
 class MatchBase(SQLModel):
     id: str
     map_name: str
-    start_time: int
+    start_time: Any  # Can be datetime or int
     duration_ms: int
     winning_team: str
     rounds_play: int
 
 class ParticipationBase(SQLModel):
     id : int
+    match_id: str
     user_id : str
     user_tag : str
     agent_name: str
@@ -24,6 +25,7 @@ class ParticipationBase(SQLModel):
     roundsLost: int
     rounds_played: int
     team_id: str
+    puuid: str
     kills: int
     deaths: int
     assists: int

@@ -6,7 +6,7 @@ from backend.core.database import get_session  # Import hàm yield session xịn
 from backend.models.match import Match, MatchParticipation  # Import Model
 from backend.models.user import User
 from backend.services.match_service import MatchService
-from backend.schemas.match_schema import ParticipationBase
+from backend.schemas.match_schema import ParticipationBase, MatchScoreboard
 
 router = APIRouter()
 
@@ -73,7 +73,7 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
     return matches
 
 
-@router.get("/{match_id}")
+@router.get("/{match_id}", response_model=MatchScoreboard)
 def get_match_by_id(match_id: str, db: Session = Depends(get_session)):
 
     match_service = MatchService()

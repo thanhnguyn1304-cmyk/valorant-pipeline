@@ -52,7 +52,7 @@ class MatchService:
                     MatchParticipation.puuid == puuid,
                 )
 
-                participation = db.exec(stmt).all()
+                participation = db.exec(stmt).first()
 
                 if participation and participation.linked_to_match:
                     k -= 1
@@ -144,24 +144,20 @@ class MatchService:
                     db.commit()
                     db.refresh(new_participation)
             
-    def get_match_detail(match_id: str, db : Session):
-        statement = select(MatchParticipation).where(Match.id == match_id)
-        participants = db.exec(statement).all()
-        
+    def get_match_detail(self, match_id: str, db : Session):
+        # Query match details with participations
         statement = select(Match).where(Match.id == match_id)
         match = db.exec(statement).first()
 
-        red_team = []
-        blue_team = []
+        if not match:
+            return None
 
-        for i in participants:
-            if i.team_id == "Blue":
-                blue_team.append(i)
-            else:
-                red_team.append(i)
-        return {
-            'match_details' : match,
-            'red_team' : red_team,
-            'blue_team' : blue_team
-        }
+        # Query participations by match_id
+        statement = select(MatchParticipation).where(MatchParticipation.match_id == match_id)
+        participants = db.exec(statement).all()
+
+        # Set participations on the match object
+        match.participations = participants
+
+        return match
 

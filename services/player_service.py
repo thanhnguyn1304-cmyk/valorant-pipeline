@@ -6,6 +6,8 @@ class PlayerService:
     def __init__(self):
         self.riot_client = RiotClient()
     async def get_player_info(self, player_name: str, player_tag: str, db : Session):
+
+        
         puuid, region = await self.riot_client.get_puuid_and_region(player_name, player_tag)
         existing = select(User).where(User.puuid == puuid)
         existing = db.exec(existing).first()
