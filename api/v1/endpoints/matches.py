@@ -48,6 +48,11 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
             match_data = await match_service.get_matches_by_region_and_puuid(
                 region, puuid, start
             )
+            
+            if not match_data:
+                flag = False
+                break
+                
             a = match_service.fetch_and_update_matches(match_data, puuid, db)
             start += batch
             if a == "done":

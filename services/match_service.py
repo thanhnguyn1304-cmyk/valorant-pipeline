@@ -32,7 +32,7 @@ class MatchService:
 
     def update_player_link(self, match_id: str, puuid: str, db: Session):
         statement = select(MatchParticipation).where(
-            MatchParticipation.match_id == match_id, puuid == puuid
+            MatchParticipation.match_id == match_id, MatchParticipation.puuid == puuid
         )
         participation_in_db = db.exec(statement).first()
         if participation_in_db:
@@ -70,7 +70,7 @@ class MatchService:
                     start_time_patched=datetime.fromisoformat(match_json["metadata"]["started_at"]),
                     duration_ms=match_json["metadata"]["game_length_in_ms"],
                     winning_team=(
-                        "red" if match_json["teams"][0]["won"] else "blue"
+                        "Red" if match_json["teams"][0]["won"] else "Blue"
                     ),  # "Blue" or "Red"
                     rounds_play=match_json["teams"][0]["rounds"]["won"]+match_json["teams"][0]["rounds"]["lost"],
                     blue_team_score=match_json["teams"][1]["rounds"]["won"],

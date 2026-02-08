@@ -24,6 +24,7 @@ class ParticipationBase(SQLModel):
     roundsWon : int
     roundsLost: int
     rounds_played: int
+    start_time: Any  # datetime from backend
     team_id: str
     puuid: str
     kills: int
