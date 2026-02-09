@@ -55,3 +55,7 @@ class MatchParticipation(SQLModel, table=True):
     linked_to_match : bool = Field(default = False)
 
     match: Optional[Match] = Relationship(back_populates="participations")
+
+    __table_args__ = (
+        UniqueConstraint("match_id", "puuid", name="unique_match_participation"),
+    )

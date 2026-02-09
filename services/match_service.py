@@ -88,6 +88,7 @@ class MatchService:
 
                 # 3. LOOP WITH INDEX (enumerate gives us the rank automatically)
                 # start=1 means the first person is #1, not #0
+                participations_to_add = []
                 for rank, players in enumerate(all_players_sorted, start=1):
                     if new_match.blue_team_score == new_match.red_team_score:
                         tmpres = "draw"
@@ -103,6 +104,7 @@ class MatchService:
                         tmpres = "win"
                     else:
                         tmpres = "lose"
+                        
                     new_participation = MatchParticipation(
                         match_id=new_match.id,
                         rounds_played=new_match.rounds_play,
@@ -114,7 +116,7 @@ class MatchService:
                         agent_name=players["agent"]["name"],
                         agent_image=small_display_icon[players["agent"]["name"]],
                         
-                        team_id=players["team_id"], # stopped here
+                        team_id=players["team_id"],
                         current_rank=players["tier"]["name"],
                         kills=players["stats"]["kills"],
                         deaths=players["stats"]["deaths"],
@@ -139,10 +141,11 @@ class MatchService:
                         position=rank,
                         linked_to_match=True if players["puuid"] == puuid else False,
                     )
-
-                    db.add(new_participation)
-                    db.commit()
-                    db.refresh(new_participation)
+                    participations_to_add.append(new_participation)
+                
+                # Bulk insert all participations for this match
+                db.add_all(participations_to_add)
+                db.commit()
             
     def get_match_detail(self, match_id: str, db : Session):
         # Query match details with participations

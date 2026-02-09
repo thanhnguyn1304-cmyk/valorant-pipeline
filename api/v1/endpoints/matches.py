@@ -18,13 +18,17 @@ async def demo(region: str, puuid: str):
     match_data = await match_service.get_matches_by_region_and_puuid(region, puuid, 0)
     return match_data
 
+
 @router.get("/demo2/{puuid}", response_model=List[ParticipationBase])
 async def demo2(puuid: str, db: Session = Depends(get_session)):
-    
-    statement = select(MatchParticipation).where(MatchParticipation.puuid == puuid).order_by(desc(MatchParticipation.start_time))
+
+    statement = (
+        select(MatchParticipation)
+        .where(MatchParticipation.puuid == puuid)
+        .order_by(desc(MatchParticipation.start_time))
+    )
     matches = db.exec(statement).all()
     return matches
-
 
 
 @router.get("/{region}/{puuid}", response_model=List[ParticipationBase])
@@ -36,30 +40,31 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
     user_in_db = db.exec(users_in_db).first()
 
     if user_in_db:
-        statement = select(MatchParticipation).where(
-            MatchParticipation.puuid == puuid,
-            MatchParticipation.linked_to_match == True,
-        )
-        matches_in_db = db.exec(statement).all()
-        flag = True
         batch = 10
         start = 0
-        while flag:
+        while True:
+            # Fetch matches from external API
             match_data = await match_service.get_matches_by_region_and_puuid(
                 region, puuid, start
             )
-            
+
             if not match_data:
-                flag = False
                 break
-                
+
+            # Process and save matches
             a = match_service.fetch_and_update_matches(match_data, puuid, db)
+
             start += batch
+
+            # Safety break: Limit to 20 matches (2 batches)
+            if start >= 20:
+                break
+
             if a == "done":
-                flag = False
+                break
 
     else:
-        for i in range(5):
+        for i in range(2):
             current_start = i * 10
             match_data = await match_service.get_matches_by_region_and_puuid(
                 region, puuid, current_start
