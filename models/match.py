@@ -1,4 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
+from sqlalchemy import UniqueConstraint
 from typing import List, Optional
 from datetime import datetime
 
@@ -36,6 +37,7 @@ class MatchParticipation(SQLModel, table=True):
 
     team_id: str
     current_rank:str
+    current_rank_image:str
 
     kills: int
     deaths: int

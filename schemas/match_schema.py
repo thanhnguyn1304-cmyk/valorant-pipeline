@@ -37,6 +37,8 @@ class ParticipationBase(SQLModel):
     result: str
     position :int
     agent_image:str
+    current_rank: str
+    current_rank_image: str
     @computed_field
     def fmt_pos(self)-> str:
         if self.position == 1:

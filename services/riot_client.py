@@ -1,4 +1,5 @@
 import httpx
+from urllib.parse import quote
 from backend.core.config import settings
 from fastapi import HTTPException
 
@@ -12,7 +13,7 @@ class RiotClient:
         self, player_name: str, player_tag: str
     ) -> str | None:
         # URL cua Henrikdev
-        url = self.base_url + f"/v1/account/{player_name}/{player_tag}?force=true"
+        url = self.base_url + f"/v1/account/{quote(player_name)}/{quote(player_tag)}?force=true"
 
         async with httpx.AsyncClient(timeout=httpx.Timeout(10.0)) as client:
             response = await client.get(url, headers=self.headers)

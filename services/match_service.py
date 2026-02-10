@@ -118,6 +118,7 @@ class MatchService:
                         
                         team_id=players["team_id"],
                         current_rank=players["tier"]["name"],
+                        current_rank_image=f"/static/rank_png/{players['tier']['name']}.png" if players.get("tier", {}).get("name") else "",
                         kills=players["stats"]["kills"],
                         deaths=players["stats"]["deaths"],
                         assists=players["stats"]["assists"],
