@@ -1,10 +1,10 @@
 import httpx
-from backend.core.config import settings
+from core.config import settings
 from fastapi import HTTPException
-from backend.models.match import Match, MatchParticipation
+from models.match import Match, MatchParticipation
 from sqlmodel import Session, select
 from datetime import datetime
-from backend.assets.agent_icon import small_display_icon
+from assets.agent_icon import small_display_icon
 
 
 class MatchService:

@@ -1,5 +1,5 @@
 import httpx
-from backend.models.agent import Agent
+from models.agent import Agent
 from sqlmodel import Session, select
 
 class AgentService:

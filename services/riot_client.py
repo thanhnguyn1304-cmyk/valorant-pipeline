@@ -1,6 +1,6 @@
 import httpx
 from urllib.parse import quote
-from backend.core.config import settings
+from core.config import settings
 from fastapi import HTTPException
 
 

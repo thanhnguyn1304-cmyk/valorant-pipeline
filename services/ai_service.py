@@ -8,9 +8,9 @@ import json
 import statistics
 from sqlmodel import Session, select, desc
 import google.generativeai as genai
-from backend.core.config import settings
-from backend.models.match import MatchParticipation
-from backend.services.knowledge_base import search_knowledge
+from core.config import settings
+from models.match import MatchParticipation
+from services.knowledge_base import search_knowledge
 
 # Configure Gemini
 if settings.GEMINI_API_KEY:
@@ -334,6 +334,7 @@ def generate_coaching_report_stream(puuid: str, db: Session):
     INSTRUCTIONS:
     - Be encouraging but direct.
     - Start with a quick summary of their playstyle.
+    - Focus on their top 3 strengths.
     - Focus on their top 3 weaknesses.
     - For each weakness, explain WHY it's bad and use the relevant coaching knowledge to give a SPECIFIC drill or tip.
     - Use formatting (bullet points, bold text) to make it readable.

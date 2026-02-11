@@ -1,5 +1,5 @@
-from backend.services.riot_client import RiotClient
-from backend.models.user import User
+from services.riot_client import RiotClient
+from models.user import User
 from sqlmodel import select, Session
 
 class PlayerService:

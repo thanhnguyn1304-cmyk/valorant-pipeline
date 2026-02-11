@@ -1,6 +1,6 @@
 from typing import List, Optional, Any
 from sqlmodel import SQLModel
-from backend.models.match import Match, MatchParticipation # Import your actual DB models
+from models.match import Match, MatchParticipation # Import your actual DB models
 from pydantic import computed_field
 # --- 1. BASIC BUILDING BLOCKS ---
 # These define what data is "public" safe. 

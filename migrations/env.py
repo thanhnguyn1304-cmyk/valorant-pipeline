@@ -12,15 +12,15 @@ backend_root = os.path.dirname(os.path.dirname(current_file_path))
 # 3. Go up ONE MORE level to find the project root -> .../ValorTracker
 project_root = os.path.dirname(backend_root)
 
-# 4. Add the PROJECT ROOT to Python's path
-# This allows "from backend.core..." to work because it finds "backend" inside "ValorTracker"
-sys.path.append(project_root)
+# 4. Add the BACKEND ROOT to Python's path
+# This allows "from core..." to work because it finds "core" inside "backend"
+sys.path.append(backend_root)
 
-from backend.core.config import settings
-from backend.models import match, agent
-from backend.models.match import Match, MatchParticipation
-from backend.models.agent import Agent
-from backend.models.user import User
+from core.config import settings
+from models import match, agent
+from models.match import Match, MatchParticipation
+from models.agent import Agent
+from models.user import User
 from sqlmodel import SQLModel
 from alembic import context
 

@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends
 from sqlmodel import Session, select, delete, desc
 from typing import List
 
-from backend.core.database import get_session  # Import hàm yield session xịn xò
-from backend.models.match import Match, MatchParticipation  # Import Model
-from backend.models.user import User
-from backend.services.match_service import MatchService
-from backend.schemas.match_schema import ParticipationBase, MatchScoreboard
+from core.database import get_session  # Import hàm yield session xịn xò
+from models.match import Match, MatchParticipation  # Import Model
+from models.user import User
+from services.match_service import MatchService
+from schemas.match_schema import ParticipationBase, MatchScoreboard
 
 router = APIRouter()
 

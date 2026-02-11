@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from backend.api.v1.endpoints import agents, matches, players, ai
+from api.v1.endpoints import agents, matches, players, ai
 
 api_router = APIRouter()
 

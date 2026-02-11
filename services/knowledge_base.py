@@ -10,8 +10,8 @@ import json
 import os
 import numpy as np
 import google.generativeai as genai
-from backend.core.config import settings
-from backend.services.coaching_knowledge import COACHING_KNOWLEDGE
+from core.config import settings
+from services.coaching_knowledge import COACHING_KNOWLEDGE
 
 # ─── Config ───────────────────────────────────────────────────────────────────
 

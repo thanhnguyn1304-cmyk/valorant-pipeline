@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from sqlmodel import Session
-from backend.core.database import get_session
-from backend.services.ai_service import generate_coaching_report_stream
+from core.database import get_session
+from services.ai_service import generate_coaching_report_stream
 
 router = APIRouter()
 

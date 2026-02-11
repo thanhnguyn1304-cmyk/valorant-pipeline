@@ -3,10 +3,10 @@ from sqlmodel import Session, select, delete
 from typing import List
 import httpx
 import json
-from backend.core.database import get_session  # Import hàm yield session xịn xò
-from backend.models.agent import Agent  # Import Model
+from core.database import get_session  # Import hàm yield session xịn xò
+from models.agent import Agent  # Import Model
 router = APIRouter()
-from backend.services.agent_service import AgentService
+from services.agent_service import AgentService
 
 
 @router.get("/", response_model=List[Agent])

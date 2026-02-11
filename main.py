@@ -3,12 +3,12 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import SQLModel
-from backend.core.config import settings
-from backend.core.database import engine
-from backend.api.v1.api import api_router
+from core.config import settings
+from core.database import engine
+from api.v1.api import api_router
 # Import models so SQLModel knows about them
-from backend.models.match import Match, MatchParticipation
-from backend.models.user import User
+from models.match import Match, MatchParticipation
+from models.user import User
 
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"

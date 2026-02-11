@@ -1,9 +1,9 @@
 from fastapi import APIRouter
-from backend.services.riot_client import RiotClient
-from backend.services.player_service import PlayerService
+from services.riot_client import RiotClient
+from services.player_service import PlayerService
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
-from backend.core.database import get_session
+from core.database import get_session
 
 router = APIRouter()
 
