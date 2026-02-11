@@ -8,3 +8,4 @@ requests
 httpx
 alembic
 psycopg2-binary
+numpy
