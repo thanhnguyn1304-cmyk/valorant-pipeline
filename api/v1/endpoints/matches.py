@@ -39,37 +39,49 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
     users_in_db = select(User).where(User.puuid == puuid)
     user_in_db = db.exec(users_in_db).first()
 
+    # Smart Sync Optimization:
+    # If user comes from a direct link/bookmark and isn't in DB yet,
+    # create them so we can use the efficient sync logic below.
+    if not user_in_db:
+        # Create placeholder user
+        new_user = User(
+            puuid=puuid,
+            region=region,
+            user_id="Unknown",  # Will be updated next time they search or specific endpoint called
+            user_tag="Unknown"
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        user_in_db = new_user
+
+    # Now we ALWAYS enter the efficient block because user_in_db is guaranteed true
     if user_in_db:
-        batch = 10
+        batch = 20 # Increased batch size slightly
         start = 0
         while True:
             # Fetch matches from external API
             match_data = await match_service.get_matches_by_region_and_puuid(
-                region, puuid, start
+                region, puuid, start=start
             )
 
             if not match_data:
                 break
 
             # Process and save matches
-            a = match_service.fetch_and_update_matches(match_data, puuid, db)
+            # fetch_and_update_matches returns "done" if it hits existing matches
+            status = match_service.fetch_and_update_matches(match_data, puuid, db)
 
+            if status == "done":
+                break
+            
             start += batch
-
-            # Safety break: Limit to 20 matches (2 batches)
-            if start >= 20:
+            # Safety break: Limit strictly to 20 recent matches for speed
+            # The "Smart Sync" relies on hitting "done" early.
+            # If it's a new user, we fetch 20. If existing capabilities, likely less.
+            if start >= 20: 
                 break
 
-            if a == "done":
-                break
-
-    else:
-        for i in range(2):
-            current_start = i * 10
-            match_data = await match_service.get_matches_by_region_and_puuid(
-                region, puuid, current_start
-            )
-            match_service.fetch_and_update_matches(match_data, puuid, db)
     statement = (
         select(MatchParticipation)
         .join(Match)
