@@ -9,3 +9,4 @@ httpx
 alembic
 psycopg2-binary
 numpy
+pgvector

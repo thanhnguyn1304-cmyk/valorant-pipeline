@@ -21,6 +21,7 @@ from models import match, agent
 from models.match import Match, MatchParticipation
 from models.agent import Agent
 from models.user import User
+from models.knowledge import CoachingTip
 from sqlmodel import SQLModel
 from alembic import context
 
