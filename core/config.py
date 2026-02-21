@@ -5,6 +5,7 @@ class Settings(BaseSettings):
     CONNECTION_STRING: str
     ACCESS_TOKEN: str
     GEMINI_API_KEY: str = ""
+    REDIS_URL: str = "redis://localhost:6379/0"
     PROJECT_NAME: str = "ValorTracker"
     API_V1_STR: str = "/api/v1"
 

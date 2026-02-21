@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 sqlmodel
-google-generativeai
+google-genai
 python-dotenv
 pydantic-settings
 requests
@@ -10,3 +10,6 @@ alembic
 psycopg2-binary
 numpy
 pgvector
+slowapi
+celery
+redis

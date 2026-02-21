@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field, Relationship
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint, Index
 from typing import List, Optional
 from datetime import datetime
 
@@ -60,4 +60,5 @@ class MatchParticipation(SQLModel, table=True):
 
     __table_args__ = (
         UniqueConstraint("match_id", "puuid", name="unique_match_participation"),
+        Index("idx_puuid_start_time", "puuid", "start_time"),
     )

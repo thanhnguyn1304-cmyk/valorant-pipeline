@@ -11,3 +11,4 @@ class CoachingTip(SQLModel, table=True):
     category: str
     # Gemini text-embedding-004 uses 768 dimensions
     embedding: List[float] = Field(sa_column=Column(Vector(768)))
+    

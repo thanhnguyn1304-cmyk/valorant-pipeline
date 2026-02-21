@@ -1,10 +1,14 @@
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import JSONResponse
 from sqlmodel import SQLModel
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from core.config import settings
 from core.database import engine
+from core.limiter import limiter
 from api.v1.api import api_router
 # Import models so SQLModel knows about them
 from models.match import Match, MatchParticipation
@@ -13,6 +17,10 @@ from models.user import User
 app = FastAPI(
     title=settings.PROJECT_NAME, openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
+
+# Attach limiter to app
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Create all tables on startup
 @app.on_event("startup")
@@ -43,3 +51,4 @@ app.mount("/static", StaticFiles(directory=assets_dir), name="static")
 @app.get("/health")
 def health_status():
     return {"status": "ok", "app_name": settings.PROJECT_NAME}
+

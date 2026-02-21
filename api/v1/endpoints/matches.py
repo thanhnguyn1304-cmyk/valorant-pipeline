@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlmodel import Session, select, delete, desc
 from typing import List
 
@@ -7,6 +7,7 @@ from models.match import Match, MatchParticipation  # Import Model
 from models.user import User
 from services.match_service import MatchService
 from schemas.match_schema import ParticipationBase, MatchScoreboard
+from core.limiter import limiter
 
 router = APIRouter()
 
@@ -31,57 +32,26 @@ async def demo2(puuid: str, db: Session = Depends(get_session)):
     return matches
 
 
+import json
+import redis
+from celery.result import AsyncResult
+from core.config import settings
+from worker import celery_app, fetch_matches_task
+
+# Initialize Redis connection for caching
+redis_client = redis.Redis.from_url(settings.REDIS_URL.replace("redis://", "redis://"), decode_responses=True)
+
 @router.get("/{region}/{puuid}", response_model=List[ParticipationBase])
-async def get_matches(region: str, puuid: str, db: Session = Depends(get_session)):
+@limiter.limit("30/minute")
+async def get_matches(request: Request, region: str, puuid: str, db: Session = Depends(get_session)):
+    
+    # 1. Check Redis Cache
+    cache_key = f"player_matches_{puuid}"
+    cached_data = redis_client.get(cache_key)
+    if cached_data:
+        return json.loads(cached_data)
 
-    match_service = MatchService()
-
-    users_in_db = select(User).where(User.puuid == puuid)
-    user_in_db = db.exec(users_in_db).first()
-
-    # Smart Sync Optimization:
-    # If user comes from a direct link/bookmark and isn't in DB yet,
-    # create them so we can use the efficient sync logic below.
-    if not user_in_db:
-        # Create placeholder user
-        new_user = User(
-            puuid=puuid,
-            region=region,
-            user_id="Unknown",  # Will be updated next time they search or specific endpoint called
-            user_tag="Unknown"
-        )
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        user_in_db = new_user
-
-    # Now we ALWAYS enter the efficient block because user_in_db is guaranteed true
-    if user_in_db:
-        batch = 20 # Increased batch size slightly
-        start = 0
-        while True:
-            # Fetch matches from external API
-            match_data = await match_service.get_matches_by_region_and_puuid(
-                region, puuid, start=start
-            )
-
-            if not match_data:
-                break
-
-            # Process and save matches
-            # fetch_and_update_matches returns "done" if it hits existing matches
-            status = match_service.fetch_and_update_matches(match_data, puuid, db)
-
-            if status == "done":
-                break
-            
-            start += batch
-            # Safety break: Limit strictly to 20 recent matches for speed
-            # The "Smart Sync" relies on hitting "done" early.
-            # If it's a new user, we fetch 20. If existing capabilities, likely less.
-            if start >= 20: 
-                break
-
+    # 2. If not in cache, query DB
     statement = (
         select(MatchParticipation)
         .join(Match)
@@ -91,12 +61,60 @@ async def get_matches(region: str, puuid: str, db: Session = Depends(get_session
     )
 
     matches = db.exec(statement).all()
+    
+    # Check if we should create a placeholder user (Smart Sync optimization)
+    if len(matches) == 0:
+        users_in_db = select(User).where(User.puuid == puuid)
+        user_in_db = db.exec(users_in_db).first()
+        if not user_in_db:
+             new_user = User(puuid=puuid, region=region, user_id="Unknown", user_tag="Unknown")
+             db.add(new_user)
+             db.commit()
+
+    # 3. Store in Redis cache for 5 minutes (300 seconds)
+    if matches:
+        from fastapi.encoders import jsonable_encoder
+        # Convert objects to dicts for JSON serialization
+        matches_dict = jsonable_encoder(matches)
+        redis_client.setex(cache_key, 300, json.dumps(matches_dict))
 
     return matches
 
 
+@router.post("/{region}/{puuid}/update")
+@limiter.limit("5/minute")
+def trigger_match_update(request: Request, region: str, puuid: str):
+    """
+    Triggers the background Celery task to fetch the latest matches.
+    """
+    task = fetch_matches_task.delay(puuid, region)
+    return {"task_id": task.id, "status": "processing"}
+
+
+@router.get("/update/status/{task_id}")
+def get_update_status(task_id: str):
+    """
+    Poll this endpoint to get the status of the background update task.
+    """
+    task = AsyncResult(task_id, app=celery_app)
+    
+    response = {
+        "state": task.state,
+    }
+    
+    if task.state == 'PROGRESS':
+        response["meta"] = task.info
+    elif task.state == 'SUCCESS':
+        response["meta"] = task.result
+    elif task.state == 'FAILURE':
+        response["meta"] = str(task.info)
+        
+    return response
+
+
 @router.get("/{match_id}", response_model=MatchScoreboard)
-def get_match_by_id(match_id: str, db: Session = Depends(get_session)):
+@limiter.limit("60/minute")
+def get_match_by_id(request: Request, match_id: str, db: Session = Depends(get_session)):
 
     match_service = MatchService()
 
@@ -120,3 +138,4 @@ def refresh_matches_cache(db: Session = Depends(get_session)):
     db.exec(statement2)
     db.commit()
     return {"message": "Cache is cleared. Pantry is now empty"}
+

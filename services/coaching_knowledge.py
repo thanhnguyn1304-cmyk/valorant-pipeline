@@ -588,4 +588,244 @@ COACHING_KNOWLEDGE = [
         "map": "Lotus",
         "category": "agent_map_combo",
     },
+    {
+    "content": "Sova is incredibly strong on Ascent due to the paper-thin walls. Pair his recon dart or drone with an Odin to easily wallbang enemies pushing B Main or A Main.",
+    "agent": "Sova",
+    "map": "Ascent",
+    "category": "agent_map_combo"
+  },
+  {
+    "content": "As Clove, your smokes can be cast after death, but their range is restricted to near your corpse. If you are going to take a risky duel, doing so in central areas like Mid allows you to continue smoking critical chokes on both sites post-mortem.",
+    "agent": "Clove",
+    "map": "all",
+    "category": "agent_tips"
+  },
+  {
+    "content": "On Breeze, a double controller setup with Viper and Astra or Omen gives you immense map control. Viper's wall cuts the large sightlines, while the secondary smoker handles localized chokes.",
+    "agent": "Viper",
+    "map": "Breeze",
+    "category": "map_strategy"
+  },
+  {
+    "content": "When holding an off-angle, stay completely still. Unnecessary movement (like jiggling) makes it harder for you to shoot accurately first. Let the element of surprise do the work.",
+    "agent": "all",
+    "map": "all",
+    "category": "positioning"
+  },
+  {
+    "content": "Use your keyboard movement to help your crosshair micro-adjustments. If your crosshair is slightly to the left of their head, step right instead of relying entirely on raw mouse flicks.",
+    "agent": "all",
+    "map": "all",
+    "category": "aim"
+  },
+  {
+    "content": "Scoreboard anxiety can cripple your confidence and cause you to overthink. If you find yourself tilting or hyper-focusing on your teammates' K/D ratios, unbind your scoreboard key for a few days to stay focused entirely on the current round.",
+    "agent": "all",
+    "map": "all",
+    "category": "mental"
+  },
+  {
+    "content": "As an initiator, understand if your agent provides 'info' (Sova, Fade) or 'flashes' (Breach, Skye). You must proactively communicate and set up your duelists with your utility before they entry, rather than using it selfishly or reacting too late.",
+    "agent": "all",
+    "map": "all",
+    "category": "role"
+  },
+  {
+    "content": "To break out of Ascendant into Immortal/Radiant, you need to stop auto-piloting and develop game sense. Start mentally tracking the enemy economy, ultimate points, and team composition gaps before the buy phase barrier drops.",
+    "agent": "all",
+    "map": "all",
+    "category": "rank_advice"
+  },
+  {
+    "content": "In a 1vX clutch situation, isolation is your best friend. Use your utility, positioning, and movement to force a series of 1v1 duels instead of wide-swinging into multiple enemies at once. Patience forces the enemy to get overconfident and make mistakes.",
+    "agent": "all",
+    "map": "all",
+    "category": "clutch"
+  },
+  {
+    "content": "If your team cannot afford a full buy, explicitly communicate a save. Try to keep your credits above 3900 so you can comfortably buy a rifle, heavy shields, and essential utility in the following round.",
+    "agent": "all",
+    "map": "all",
+    "category": "economy"
+  },
+  {
+    "content": "As Jett, your dash is your most valuable asset, but don't waste it defensively unless necessary. Use it proactively to break crosshairs by dashing into your initiator's utility (like a Sova dart or Fade haunt) to take space and force the defense to turn.",
+    "agent": "Jett",
+    "map": "all",
+    "category": "agent_tips"
+  },
+  {
+    "content": "On Bind, establishing early Shower control is crucial for Attackers. It prevents defenders from pushing up for free info and gives your team the threat of a fast A execute, which forces rotations and opens up B site.",
+    "agent": "all",
+    "map": "Bind",
+    "category": "map_strategy"
+  },
+  {
+    "content": "Stop holding static, head-level common angles where pre-fires happen. Play off-angles—either slightly wider or tighter than expected. Always secure an escape route so you can get one pick and fall back without getting traded.",
+    "agent": "all",
+    "map": "all",
+    "category": "positioning"
+  },
+  {
+    "content": "Omen is almost a necessity on Split. His Paranoia gets massive value through the walls in B Main or Mid Mail, and his ability to repeatedly throw one-way smokes in A Main completely shuts down fast attacker executes.",
+    "agent": "Omen",
+    "map": "Split",
+    "category": "agent_map_combo"
+  },
+  {
+    "content": "Crosshair placement isn't just about aiming at head height; it's about predicting enemy momentum. If you anticipate a wide swing (like a Neon or a highly aggressive Duelist), hold your crosshair further out from the wall to account for human reaction time.",
+    "agent": "all",
+    "map": "all",
+    "category": "aim"
+  },
+  {
+    "content": "Consistency stems from routine, not hype. Queueing while tilted is the fastest way to hemorrhage RR. If you lose two games in a row, take a 15-minute break to reset mentally. Don't carry the frustration of the last match into the pistol round of the next.",
+    "agent": "all",
+    "map": "all",
+    "category": "mental"
+  },
+  {
+    "content": "If you are playing a Sentinel, your job isn't just to passively anchor a site and die to a 5-man rush. If the enemies consistently hit the opposite site, communicate with your team to stack it, or aggressively push your main for early map control and information.",
+    "agent": "all",
+    "map": "all",
+    "category": "role"
+  },
+  {
+    "content": "To push out of Ascendant and break into Immortal/Radiant, mechanical skill is no longer enough. You must win micro-situations by trading your teammates efficiently and understanding default timings before the round even starts.",
+    "agent": "all",
+    "map": "all",
+    "category": "rank_advice"
+  },
+  {
+    "content": "In post-plant 1vX scenarios, play the spike, not the players. If you tap the bomb to fake a defuse, immediately hold an angle and listen for their running audio. Force them to panic and isolate the 1v1 duels.",
+    "agent": "all",
+    "map": "all",
+    "category": "clutch"
+  },
+  {
+    "content": "When your team is up 2-0 and the enemy is on a bonus or full eco round, group up and play as a pack. The worst thing you can do is give them isolated 1v1s where they can pick up a dropped rifle and swing the momentum of the half.",
+    "agent": "all",
+    "map": "all",
+    "category": "economy"
+  },
+  {
+    "content": "When double-satcheling as Raze, don't look straight down. Look slightly forward and down at an angle to maximize horizontal momentum rather than just vertical height, allowing you to break crosshairs faster when entering a site.",
+    "agent": "Raze",
+    "map": "all",
+    "category": "agent_tips"
+  },
+  {
+    "content": "Icebox Mid control is heavily underutilized in lower ranks. Sending one player to lurk under Tube or pressure Boiler forces the defense to anchor mid, relieving pressure from the main choke points on A and B.",
+    "agent": "all",
+    "map": "Icebox",
+    "category": "map_strategy"
+  },
+  {
+    "content": "Stop clearing angles with your W key. When you need to peek, use A or D to swing perpendicular to the angle. Diagonal movement makes you slower on the enemy's screen and easier to hit.",
+    "agent": "all",
+    "map": "all",
+    "category": "positioning"
+  },
+  {
+    "content": "Killjoy's B site defense on Ascent is meta for a reason, but it becomes predictable. To avoid getting your setup broken by Sova shocks or Kayo knives, alternate your turret between B Main wall, market, and CT every few rounds.",
+    "agent": "Killjoy",
+    "map": "Ascent",
+    "category": "agent_map_combo"
+  },
+  {
+    "content": "When clearing deep elevation changes (like A Ramps on Split or A Heaven on Haven), don't gradually adjust your crosshair up the ramp. Snap your crosshair directly to the expected head height of the new elevation before you fully expose yourself.",
+    "agent": "all",
+    "map": "all",
+    "category": "aim"
+  },
+  {
+    "content": "Radiant isn't about hitting every shot; it's about not spiraling when you miss. If you are having an off-aim day, switch your focus to hyper-communicating, playing heavy utility agents, and setting your teammates up for trades.",
+    "agent": "all",
+    "map": "all",
+    "category": "mental"
+  },
+  {
+    "content": "As a Controller, throwing a smoke right as the barrier drops tells the enemy exactly where you are and wastes 15 seconds of your smoke duration. Hold your smokes until your team is actually taking map control or the enemy is committing to a hit.",
+    "agent": "all",
+    "map": "all",
+    "category": "role"
+  },
+  {
+    "content": "Stop blaming your teammates for being hardstuck. Review your own VODs and look at your deaths. Ask yourself: 'Did I have to take that fight?' and 'Was my team in a position to trade me?' If the answer is no, the mistake was yours.",
+    "agent": "all",
+    "map": "all",
+    "category": "rank_advice"
+  },
+  {
+    "content": "In a 1v2 post-plant, if you get the first kill, immediately reposition. The second player will try to swing off the contact of the first. By moving, you force them to clear your old angle while you hold the crossfire.",
+    "agent": "all",
+    "map": "all",
+    "category": "clutch"
+  },
+  {
+    "content": "Understanding the 'bonus' round is critical. If you win pistol and round 2, round 3 is your bonus. Do not buy full rifles unless you survived. Keep your spectres, play close angles, and try to break the enemy's economy by securing 2-3 kills.",
+    "agent": "all",
+    "map": "all",
+    "category": "economy"
+  },
+  {
+    "content": "Cypher's camera shouldn't just be used for spotting the initial push. Place it high and deep on site so that when the enemy executes, you can tag them through your cages while they are actively planting or scaling.",
+    "agent": "Cypher",
+    "map": "all",
+    "category": "agent_tips"
+  },
+  {
+    "content": "On Sunset, Mid control dictates the entire half. Defenders must fight for Mid Tiles and Bottom Mid using utility, otherwise Attackers can freely pinch either site and force the defense into unwinnable retakes.",
+    "agent": "all",
+    "map": "Sunset",
+    "category": "map_strategy"
+  },
+  {
+    "content": "When holding a corner, play as far back from the wall as the geometry allows. Due to how perspective works, the player further from the angle will see the opponent's shoulder before the opponent sees them.",
+    "agent": "all",
+    "map": "all",
+    "category": "positioning"
+  },
+  {
+    "content": "Breach on Fracture is a nightmare for defenders. Use your Fault Line down A Main or B Main off cooldown at the start of the round to completely deny aggressive defender pushes and secure ultimate orbs for free.",
+    "agent": "Breach",
+    "map": "Fracture",
+    "category": "agent_map_combo"
+  },
+  {
+    "content": "If you are holding an angle with an Operator, don't hold the absolute edge of the wall. Give yourself a small gap to account for human reaction time, otherwise fast-swinging Neon or Jett players will pass your crosshair before you click.",
+    "agent": "all",
+    "map": "all",
+    "category": "aim"
+  },
+  {
+    "content": "Mute toxic teammates instantly. Do not argue with them. Engaging in an argument takes your mental bandwidth away from the game and ruins the vibe for the other three players. Communicate via pings if necessary.",
+    "agent": "all",
+    "map": "all",
+    "category": "mental"
+  },
+  {
+    "content": "If you play Sentinel, your life is heavily tied to flank watch. If you die first pushing mid for no reason, your team loses their trips/alarmbots, and the attackers are forced to play paranoid for the rest of the round.",
+    "agent": "all",
+    "map": "all",
+    "category": "role"
+  },
+  {
+    "content": "To climb efficiently, limit your agent pool. Playing 8 different agents across 4 roles means you are a master of none. Pick 2 agents in a primary role, and 1 backup agent in a secondary role, and master their micro-mechanics.",
+    "agent": "all",
+    "map": "all",
+    "category": "rank_advice"
+  },
+  {
+    "content": "When playing time in a 1v1 post-plant, jiggle peeking the spike is safer than wide swinging. Show just your shoulder to bait out their shot, then hide again. Every second they spend resetting their aim is a second closer to detonation.",
+    "agent": "all",
+    "map": "all",
+    "category": "clutch"
+  },
+  {
+    "content": "Track enemy ultimates during the buy phase. If the enemy Killjoy has lockdown, your team needs a plan to break it (Sova ult, Raze nade) or you must explicitly decide to play for a fast retake before the round even starts.",
+    "agent": "all",
+    "map": "all",
+    "category": "economy"
+  }
 ]

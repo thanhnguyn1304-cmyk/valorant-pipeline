@@ -41,25 +41,52 @@ class MatchService:
             db.refresh(participation_in_db)
 
     def fetch_and_update_matches(self, match_data, puuid: str, db: Session):
+        # ── BATCHED LOOKUPS (N+1 Fix) ────────────────────────────────────────
+        # Instead of querying DB inside the loop (1 query per match = N+1),
+        # we pre-fetch ALL existing data in 2 queries, then check in-memory.
+
+        # 1. Extract all match IDs from the API response
+        incoming_ids = [m["metadata"]["match_id"] for m in match_data]
+
+        # 2. ONE query: find which of these matches already exist in DB
+        existing_matches_stmt = select(Match).where(Match.id.in_(incoming_ids))
+        existing_matches = {m.id: m for m in db.exec(existing_matches_stmt).all()}
+
+        # 3. ONE query: find which participations already exist for this player
+        existing_parts_stmt = select(MatchParticipation).where(
+            MatchParticipation.match_id.in_(incoming_ids),
+            MatchParticipation.puuid == puuid,
+        )
+        existing_parts = {
+            p.match_id: p for p in db.exec(existing_parts_stmt).all()
+        }
+
+        # ── PROCESS LOOP (no DB queries inside!) ─────────────────────────────
         k = 3
+        new_matches_to_add = []
+        new_participations_to_add = []
+
         for match_json in match_data:
             match_id = match_json["metadata"]["match_id"]
-            statement = select(Match).where(Match.id == match_id)
-            match_in_db = db.exec(statement).first()
-            if match_in_db:
-                stmt = select(MatchParticipation).where(
-                    MatchParticipation.match_id == match_id,
-                    MatchParticipation.puuid == puuid,
-                )
 
-                participation = db.exec(stmt).first()
+            if match_id in existing_matches:
+                # Match already in DB — check if player is linked
+                participation = existing_parts.get(match_id)
 
                 if participation and participation.linked_to_match:
                     k -= 1
                     if k == 0:
+                        # Commit any pending new data before returning
+                        if new_matches_to_add or new_participations_to_add:
+                            db.add_all(new_matches_to_add)
+                            db.commit()
+                            db.add_all(new_participations_to_add)
+                            db.commit()
                         return "done"  # Safety cap of 3 we stop here
                 else:
-                    self.update_player_link(match_id, puuid, db)
+                    # Link this player to the existing match
+                    if participation:
+                        participation.linked_to_match = True
                     k = 3
 
             else:
@@ -76,9 +103,7 @@ class MatchService:
                     blue_team_score=match_json["teams"][1]["rounds"]["won"],
                     red_team_score=match_json["teams"][0]["rounds"]["won"],
                 )
-                db.add(new_match)
-                db.commit()
-                db.refresh(new_match)
+                new_matches_to_add.append(new_match)
 
                 all_players_raw = match_json["players"]
 
@@ -86,9 +111,6 @@ class MatchService:
                     all_players_raw, key=lambda x: x["stats"]["score"], reverse=True
                 )
 
-                # 3. LOOP WITH INDEX (enumerate gives us the rank automatically)
-                # start=1 means the first person is #1, not #0
-                participations_to_add = []
                 for rank, players in enumerate(all_players_sorted, start=1):
                     if new_match.blue_team_score == new_match.red_team_score:
                         tmpres = "draw"
@@ -142,11 +164,15 @@ class MatchService:
                         position=rank,
                         linked_to_match=True if players["puuid"] == puuid else False,
                     )
-                    participations_to_add.append(new_participation)
-                
-                # Bulk insert all participations for this match
-                db.add_all(participations_to_add)
-                db.commit()
+                    new_participations_to_add.append(new_participation)
+
+        # ── BATCH COMMIT (all at once instead of per-match) ──────────────────
+        if new_matches_to_add:
+            db.add_all(new_matches_to_add)
+            db.commit()
+        if new_participations_to_add:
+            db.add_all(new_participations_to_add)
+            db.commit()
             
     def get_match_detail(self, match_id: str, db : Session):
         # Query match details with participations

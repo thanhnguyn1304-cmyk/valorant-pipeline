@@ -7,14 +7,19 @@ from collections import defaultdict
 import json
 import statistics
 from sqlmodel import Session, select, desc
-import google.generativeai as genai
+from google import genai
 from core.config import settings
 from models.match import MatchParticipation
 from services.knowledge_base import search_knowledge
 
-# Configure Gemini
-if settings.GEMINI_API_KEY:
-    genai.configure(api_key=settings.GEMINI_API_KEY)
+# Shared Gemini client
+_client = None
+
+def _get_client():
+    global _client
+    if _client is None:
+        _client = genai.Client(api_key=settings.GEMINI_API_KEY)
+    return _client
 
 
 
@@ -295,56 +300,67 @@ def generate_coaching_report_stream(puuid: str, db: Session):
     weaknesses = data["weaknesses"]
     stats = data["summary"]
 
-    # 2. Librarian: Gather relevant coaching tips
-    # We'll search for tips related to the top 3 weaknesses
-    relevant_tips = []
-    seen_content = set()
+    try:
+        # 2. Librarian: Gather relevant coaching tips
+        # We'll search for tips related to the top 3 weaknesses
+        relevant_tips = []
+        seen_content = set()
 
-    for w in weaknesses[:3]:
-        # Formulate a search query from the weakness
-        query = f"tips for {w['type']} {w.get('agent', '')} {w.get('map', '')}"
-        
-        # Filter by agent/map if applicable
-        agent_filter = w.get("agent")
-        map_filter = w.get("map")
+        for w in weaknesses[:3]:
+            # Formulate a search query from the weakness
+            query = f"tips for {w['type']} {w.get('agent', '')} {w.get('map', '')}"
+            
+            # Filter by agent/map if applicable
+            agent_filter = w.get("agent")
+            map_filter = w.get("map")
 
-        results = search_knowledge(query, top_k=2, agent_filter=agent_filter, map_filter=map_filter)
-        
-        for tip in results:
-            if tip["content"] not in seen_content:
-                relevant_tips.append(tip)
-                seen_content.add(tip["content"])
+            results = search_knowledge(query, db=db, top_k=2, agent_filter=agent_filter, map_filter=map_filter)
+            
+            for tip in results:
+                if tip["content"] not in seen_content:
+                    relevant_tips.append(tip)
+                    seen_content.add(tip["content"])
 
-    # 3. Writer: Construct Prompt
-    prompt = f"""
-    You are a professional Valorant coach. Write a personalized training report for a player with the following stats.
+        # 3. Writer: Construct Prompt
+        prompt = f"""
+        You are a professional Valorant coach. Write a personalized training report for a player with the following stats.
 
-    PLAYER PROFILE:
-    - Average K/D: {stats.get('avg_kd')}
-    - Headshot %: {stats.get('avg_hs')}% (Goal: >20%)
-    - Win Rate: {int(stats.get('win_rate', 0)*100)}%
-    - Deaths/Round: {stats.get('deaths_per_round')}
+        PLAYER PROFILE:
+        - Average K/D: {stats.get('avg_kd')}
+        - Headshot %: {stats.get('avg_hs')}% (Goal: >20%)
+        - Win Rate: {int(stats.get('win_rate', 0)*100)}%
+        - Deaths/Round: {stats.get('deaths_per_round')}
 
-    IDENTIFIED WEAKNESSES:
-    {json.dumps(weaknesses[:3], indent=2)}
+        IDENTIFIED WEAKNESSES:
+        {json.dumps(weaknesses[:3], indent=2)}
 
-    RELEVANT COACHING KNOWLEDGE (Use these tips!):
-    {json.dumps([t['content'] for t in relevant_tips], indent=2)}
+        RELEVANT COACHING KNOWLEDGE (Use these tips!):
+        {json.dumps([t['content'] for t in relevant_tips], indent=2)}
 
-    INSTRUCTIONS:
-    - Be encouraging but direct.
-    - Start with a quick summary of their playstyle.
-    - Focus on their top 3 weaknesses.
-    - For each weakness, explain WHY it's bad and use the relevant coaching knowledge to give a SPECIFIC drill or tip.
-    - Use formatting (bullet points, bold text) to make it readable.
-    - Keep it under 300 words.
-    """
+        INSTRUCTIONS:
+        - Be encouraging but direct.
+        - Start with a quick summary of their playstyle.
+        - Focus on their top 3 weaknesses.
+        - For each weakness, explain WHY it's bad and use the relevant coaching knowledge to give a SPECIFIC drill or tip.
+        - Use formatting (bullet points, bold text) to make it readable.
+        - Keep it under 300 words.
+        """
 
-    # 4. Stream Response
-    model = genai.GenerativeModel("gemini-flash-latest")
-    response = model.generate_content(prompt, stream=True)
+        # 4. Stream Response
+        client = _get_client()
+        response = client.models.generate_content_stream(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
 
-    for chunk in response:
-        if chunk.text:
-            yield chunk.text
+        for chunk in response:
+            if chunk.text:
+                yield chunk.text
+
+    except Exception as e:
+        error_msg = str(e)
+        if "429" in error_msg or "RESOURCE_EXHAUSTED" in error_msg:
+            yield "\n\n> **Note:** The AI Coach is currently receiving too many requests (API rate limit). Please wait about 1-2 minutes and try again!"
+        else:
+            yield f"\n\n> **Error:** An unexpected error occurred while generating your report: {error_msg}"
 
