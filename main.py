@@ -28,14 +28,14 @@ def on_startup():
     SQLModel.metadata.create_all(engine)
 
 origins = [
-    # "http://localhost:3000",  # This is your React app's address
-    "*"
+    "http://localhost:5173", # Vite local dev
+    "https://valorant-frontend-nine.vercel.app", # Your live Vercel frontend
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # Which "origins" (websites) are allowed
-    allow_credentials=False, # Must be False if using "*" for origins
+    allow_credentials=True, 
     allow_methods=["*"],  # Allow all methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
 )
