@@ -73,9 +73,14 @@ async def get_matches(request: Request, region: str, puuid: str, db: Session = D
 
     # 3. Store in Redis cache for 5 minutes (300 seconds)
     if matches:
+        from schemas.match_schema import ParticipationBase
         from fastapi.encoders import jsonable_encoder
-        # Convert objects to dicts for JSON serialization
-        matches_dict = jsonable_encoder(matches)
+        
+        # Convert the raw database models into our clean Pydantic schema first!
+        # This strips the cyclic Match -> Participation relationship that crashes jsonable_encoder
+        safe_matches = [ParticipationBase.model_validate(m) for m in matches]
+        matches_dict = jsonable_encoder(safe_matches)
+        
         redis_client.setex(cache_key, 300, json.dumps(matches_dict))
 
     return matches
