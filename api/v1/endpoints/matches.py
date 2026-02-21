@@ -34,12 +34,17 @@ async def demo2(puuid: str, db: Session = Depends(get_session)):
 
 import json
 import redis
+import ssl
 from celery.result import AsyncResult
 from core.config import settings
 from worker import celery_app, fetch_matches_task
 
 # Initialize Redis connection for caching
-redis_client = redis.Redis.from_url(settings.REDIS_URL.replace("redis://", "redis://"), decode_responses=True)
+_redis_url = settings.REDIS_URL.replace("?ssl_cert_reqs=CERT_NONE", "")
+if "rediss://" in _redis_url:
+    redis_client = redis.Redis.from_url(_redis_url, decode_responses=True, ssl_cert_reqs=ssl.CERT_NONE)
+else:
+    redis_client = redis.Redis.from_url(_redis_url, decode_responses=True)
 
 @router.get("/{region}/{puuid}", response_model=List[ParticipationBase])
 @limiter.limit("30/minute")

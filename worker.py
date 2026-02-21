@@ -51,7 +51,12 @@ def fetch_matches_task(self, puuid: str, region: str):
             
         # Clean up the Redis cache for this user so they get fresh data next time
         import redis
-        r = redis.Redis.from_url(settings.REDIS_URL.replace("redis://", "redis://"))
+        import ssl
+        _redis_url = settings.REDIS_URL.replace("?ssl_cert_reqs=CERT_NONE", "")
+        if "rediss://" in _redis_url:
+            r = redis.Redis.from_url(_redis_url, ssl_cert_reqs=ssl.CERT_NONE)
+        else:
+            r = redis.Redis.from_url(_redis_url)
         r.delete(f"player_matches_{puuid}")
             
     except Exception as e:
